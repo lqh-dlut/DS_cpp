@@ -54,6 +54,7 @@ struct link1/*链表结构head,node1,node2, ..., nodelength, end*/
     }
 
     //real index（将负数index转正）index = 1-length
+    //1对应-length ， length对应-1
     int real_index(int x){
         if(x<0) return this->get_length() + x + 1;
         else return x;
@@ -114,6 +115,35 @@ struct link1/*链表结构head,node1,node2, ..., nodelength, end*/
         dele_nail_node(t);
         this -> length = 0;
     }
+
+    iter get_iter(int x){
+        x = this -> real_index(x);
+        nstr p = this->head;
+        for(int i = 0; i<x; i++)
+        {
+            p = p -> next;
+        }
+        iter r;
+        r.nd = p;
+        return r;
+    }
+
+    iter iter_real_head()
+    {
+        return this->get_iter(0);
+    }
+    iter iter_head()
+    {
+        return this->get_iter(1);
+    }
+    iter iter_end()
+    {
+        return this->get_iter(-1);
+    }
+    iter iter_real_end()
+    {
+        return ++this->get_iter(-1);
+    }
 };
 
 struct iter{
@@ -142,9 +172,50 @@ struct iter{
 		this->nd = this->nd->prev;
 		return i;
     }
+    iter operator+(int l){
+        iter it = *this;
+        for(int i=1; i<=l; i++) it++;
+        return it;
+    }
+    iter operator-(int l){
+        iter it = *this;
+        for(int i=1; i<=l; i++) it--;
+        return it;
+    }
+    bool operator==(const iter other){
+        return this -> nd == other.nd;
+    }
+    bool operator!=(const iter other){
+        return this -> nd != other.nd;
+    }
+    iter real_head(){
+        //前提：前面重构的符号--，如果prev是NULL则返回自己
+        iter p = *this;
+        iter r = p--;
+        while(p.nd!=r.nd) r--, p--;
+        return p;
+    }
+    iter real_end(){
+        iter p =*this;
+        iter r = p++;
+        while(p.nd!=r.nd) r++, p++;
+        return p;
+    }
+    iter head(){
+        //返回的是有数据的第一个节点
+        return ++this->real_head(); 
+    }
+    iter end(){
+        return --this->real_end();
+    }
+
+
     nstr get(){
         return this->nd;
     }
+    friend ostream& operator<<(ostream& os, iter self){
+        os << self.get()->getinf();
+        return os;
+    }
     
-
 };
